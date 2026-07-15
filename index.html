@@ -15,6 +15,7 @@
             --accent-gold: #ffd700;
             --text-light: #ffffff;
             --text-muted: #b5bdd4;
+            --accent-red: #ff3366;
         }
 
         * {
@@ -55,7 +56,7 @@
         }
 
         /* ---------------------------------
-           1. WELCOME SCREEN (Glassmorphism & Bubbles)
+           1. WELCOME SCREEN
            --------------------------------- */
         #welcome-screen {
             flex-direction: column;
@@ -179,7 +180,7 @@
         }
 
         /* ---------------------------------
-           2. WARNING SCREEN (Blinking Neon Red & Typewriter)
+           2. WARNING SCREEN
            --------------------------------- */
         #warning-screen {
             background: #000000;
@@ -228,7 +229,7 @@
         }
 
         /* ---------------------------------
-           3. CHAPTER SELECTION (Premium Dashboard Theme)
+           3. CHAPTER SELECTION (Menu Grid)
            --------------------------------- */
         #menu-screen {
             flex-direction: column;
@@ -237,6 +238,7 @@
             padding: 40px 20px;
             overflow-y: auto;
             justify-content: flex-start;
+            transition: filter 0.5s ease;
         }
 
         .menu-header {
@@ -277,9 +279,35 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Lock styling for cards 2-10 */
+        .chapter-card.locked {
+            border-color: rgba(255, 51, 102, 0.2);
+        }
+        .chapter-card.locked::after {
+            content: "🔒 Locked";
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.75rem;
+            color: var(--accent-red);
+            font-weight: bold;
+            background: rgba(255, 51, 102, 0.15);
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        /* Magic Fade Out Animation for incorrect password */
+        .chapter-card.fade-out-magic {
+            opacity: 0;
+            transform: translateY(50px) scale(0.8);
+            pointer-events: none;
         }
 
         .chapter-card::before {
@@ -294,7 +322,7 @@
             transition: opacity 0.4s;
         }
 
-        .chapter-card:hover {
+        .chapter-card:hover:not(.fade-out-magic) {
             transform: translateY(-8px);
             border-color: rgba(138, 43, 226, 0.4);
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 43, 226, 0.15);
@@ -327,7 +355,7 @@
         }
 
         /* ---------------------------------
-           4. BOOK VIEW SCREEN (Paginated Book Theme)
+           4. BOOK VIEW SCREEN
            --------------------------------- */
         #book-screen {
             flex-direction: column;
@@ -474,7 +502,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* Typewriter Blinking Cursor style */
         .story-paragraph.typing-active::after {
             content: "▮";
             color: var(--accent-pink);
@@ -486,7 +513,6 @@
             50% { opacity: 0; }
         }
 
-        /* Fade/Blur in transition for READ mode */
         .story-paragraph.blur-fade-in {
             opacity: 0;
             filter: blur(10px);
@@ -538,9 +564,127 @@
             font-weight: 500;
         }
 
+        /* ---------------------------------
+           5. CRYPTO/ACCESS DENIED OVERLAY SCREEN
+           --------------------------------- */
+        #lock-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 9, 15, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            animation: lockFadeIn 0.5s forwards;
+        }
+
+        @keyframes lockFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lock-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--accent-red);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(255, 51, 102, 0.25), inset 0 0 15px rgba(255, 51, 102, 0.1);
+        }
+
+        .lock-title {
+            color: var(--accent-red);
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+            animation: textPulse 1s infinite alternate;
+        }
+
+        @keyframes textPulse {
+            from { transform: scale(0.98); }
+            to { transform: scale(1.02); }
+        }
+
+        .lock-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .lock-btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .lock-submit-btn {
+            background: linear-gradient(135deg, var(--accent-red), #b3003b);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 25px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.3);
+        }
+
+        .lock-submit-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(255, 51, 102, 0.5);
+        }
+
+        .lock-cancel-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 12px;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lock-cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
     </style>
 </head>
 <body>
+
+    <!-- AUDIO ELEMENTS -->
+    <!-- Sad Background Instrumental Music -->
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+    </audio>
+    <!-- SFX Sounds -->
+    <audio id="sound-typing" loop>
+        <source src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" type="audio/wav">
+    </audio>
+    <audio id="sound-warning">
+        <source src="https://assets.mixkit.co/active_storage/sfx/936/936-84.wav" type="audio/wav">
+    </audio>
+    <audio id="sound-lock">
+        <source src="https://assets.mixkit.co/active_storage/sfx/852/852-84.wav" type="audio/wav">
+    </audio>
+    <audio id="sound-whoosh">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2811/2811-84.wav" type="audio/wav">
+    </audio>
 
     <!-- 1. WELCOME SCREEN -->
     <section id="welcome-screen" class="screen active">
@@ -603,10 +747,23 @@
         </div>
     </section>
 
+    <!-- 5. SECURITY LOCK OVERLAY -->
+    <div id="lock-overlay">
+        <div class="lock-container">
+            <div class="lock-title">Access Denied!</div>
+            <p class="lock-desc">මෙම පරිච්ඡේදය කියවීමට ඔබට අවසර නොමැත. කරුණාකර එය විවෘත කිරීමට නිවැරදි කෝඩ් එක ඇතුළත් කරන්න.</p>
+            <div class="input-group" style="margin-bottom: 15px;">
+                <input type="password" id="lock-pass-input" class="login-input" placeholder="Enter security code..." autocomplete="off">
+            </div>
+            <div class="lock-btn-group">
+                <button class="lock-cancel-btn" onclick="closeLockOverlay()">Cancel</button>
+                <button class="lock-submit-btn" onclick="verifyLockCode()">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- 10 CHAPTERS DATA WITH EDITABLE SECTIONS ---
-        // ඔබට අවශ්‍ය ඕනෑම ඡේද ප්‍රමාණයක් (Paragraphs) මෙහි එක් එක් පරිච්ඡේදය යටතේ ලියන්න පුළුවන්.
-        // පිටුවක ඡේද 4ක් ඉක්මවා ගියහොත් එය ස්වයංක්‍රීයවම ඊළඟ පිටුවට (Next Page) එකතු වේ.
         const chaptersData = {
             1: [
                 "මගේ ජීවිතයේ පූර්විකාව ලියන්නට පටන් ගන්නේ කොතැනින්දැයි මට සිතාගත නොහැකිය. සෑම මනුෂ්‍යයෙකුටම තමන්ටම ආවේණික වූ රිද්මයක් මෙන්ම රටාවක් ඇත. කුඩා කල මා විඳි ඒ සුන්දර පරිසරය, නිදහස සහ සුවඳ අදටත් මාගේ සිහින අතර දැවටෙමින් පවතී.",
@@ -620,7 +777,7 @@
                 "මගේ පාසල් විය ආරම්භ වූයේ මාගේ මුළු ජීවිතයේම විශාලතම පෙරළියක් සිදු කරමිනි. පළමු දින පාසල් ගිය හැටි අද මෙන් මතකය. මව්පියන්ගේ දෑත් හැර දමා අමුතුම පරිසරයකට අනුගත වීම ලෙහෙසි පහසු කටයුත්තක් නොවීය.",
                 "එහෙත් ක්‍රමයෙන් හමුවූ ගුරුවරුන්ගේ ආදරයත්, නව මිතුරන්ගේ ඇසුරත් නිසා පාසල මගේ දෙවන නිවස බවට පත්විය. පොත්පත් වලට පමණක් සීමා නොවී, ක්‍රීඩාව සහ බාහිර ක්‍රියාකාරකම් හරහා මගේ පෞරුෂය වර්ධනය වන්නට විය.",
                 "පාසලේ ලියුම් දියුණු කරමින් ලැබූ පන්නරය මා ජීවිතයේ ඉදිරියට යෑමට මහඟු පිටුවහලක් විය. එම සුන්දර මතකයන් මෙහි සනිටුහන් කරමි.",
-                "ළමා මනස ක්‍රමයෙන් තරුණ වියට පරිවර්තනය වෙද්දී හමුවූ අභියෝග, ගැටලු සහ අපේක්ෂාවන් මේ පරිච්ඡේදය පුරාවට දිග හැරේ."
+                "ළමා මනස ක්‍රමයෙන් තරුණ වියට පරිවර්තනය වෙද්දී හමුවූ අභියෝග, ගැටලු සහ අපේක්ෂාවන් මේ පරිච්ඡේදය පුරාවට dig හැරේ."
             ],
             3: [
                 "තරුණ විය යනු සිහින වල තක්සලාවයි. ජීවිතයේ සැබෑ ලෝකය කුමක්ද කියා වටහා ගැනීමට පටන් ගත්තේ මේ කාලයේදීය. ආදරය, සෙනෙහස මෙන්ම කලකිරීම් ද ජීවිතයට සමීප විය.",
@@ -702,10 +859,42 @@
         // --- GLOBAL RUNTIME VARIABLES ---
         let currentChapter = 1;
         let currentPage = 1;
-        let activeMode = 'typing'; // Default is 'typing' mode
-        let typingTimer = null; // Typing animation reference
+        let activeMode = 'typing';
+        let typingTimer = null;
+        let soundInterval = null;
 
-        // --- WELCOME PAGE BUBBLES ---
+        // Custom features logic state
+        let ch1FullyRead = false; // Tracks if Ch1 was read in full
+        let unlockedSecret = false; // Tracks password access state
+        let targetLockedChapter = null; // Stored lock click target
+
+        // --- AUDIO ENGINE ---
+        const bgMusic = document.getElementById('bg-music');
+        const typingSfx = document.getElementById('sound-typing');
+        const warningSfx = document.getElementById('sound-warning');
+        const lockSfx = document.getElementById('sound-lock');
+        const whooshSfx = document.getElementById('sound-whoosh');
+
+        function startBgMusic() {
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(e => console.log("Music play blocked. Waiting for click."));
+        }
+
+        function playSFX(audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => {});
+        }
+
+        function startTypingSound() {
+            typingSfx.volume = 0.5;
+            typingSfx.play().catch(e => {});
+        }
+
+        function stopTypingSound() {
+            typingSfx.pause();
+        }
+
+        // --- WELCOME BUBBLES ---
         function createWelcomeBubbles() {
             const container = document.getElementById('welcome-bubbles');
             container.innerHTML = '';
@@ -714,20 +903,15 @@
             for (let i = 0; i < bubbleCount; i++) {
                 const bubble = document.createElement('div');
                 bubble.className = 'bubble';
-                
-                const size = Math.random() * 80 + 30; // 30px to 110px
+                const size = Math.random() * 80 + 30;
                 bubble.style.width = `${size}px`;
                 bubble.style.height = `${size}px`;
-                
                 bubble.style.left = `${Math.random() * 100}%`;
                 bubble.style.bottom = `-120px`;
-                
-                // Randomize animations
                 const delay = Math.random() * 8;
-                const duration = Math.random() * 10 + 8; // 8s to 18s
+                const duration = Math.random() * 10 + 8;
                 bubble.style.animationDelay = `${delay}s`;
                 bubble.style.animationDuration = `${duration}s`;
-                
                 container.appendChild(bubble);
             }
         }
@@ -737,20 +921,24 @@
             createWelcomeBubbles();
             generateMenuGrid();
 
-            // Keyboard navigation / Enter handler
             document.getElementById('username-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    validateAndEnter();
-                }
+                if (e.key === 'Enter') validateAndEnter();
             });
-
             document.getElementById('enter-btn').addEventListener('click', validateAndEnter);
+
+            // Password submit on enter key press
+            document.getElementById('lock-pass-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') verifyLockCode();
+            });
         };
 
-        // --- VALIDATION AND TRANSITIONS ---
+        // --- TRANSITIONS ---
         function validateAndEnter() {
             const inputVal = document.getElementById('username-input').value.trim();
             const errorMsg = document.getElementById('error-msg');
+
+            // Trigger Background Music upon User Action (Browser requirement)
+            startBgMusic();
 
             if (inputVal === 'dkxx') {
                 errorMsg.style.opacity = '0';
@@ -758,7 +946,6 @@
             } else {
                 errorMsg.textContent = 'Invalid name! Please try again.';
                 errorMsg.style.opacity = '1';
-                // Small shake animation on the card
                 const card = document.querySelector('.login-card');
                 card.style.transform = 'translateX(-10px)';
                 setTimeout(() => card.style.transform = 'translateX(10px)', 100);
@@ -771,15 +958,13 @@
             const welcome = document.getElementById('welcome-screen');
             const warning = document.getElementById('warning-screen');
 
-            // Hide Welcome
             welcome.classList.remove('active');
             setTimeout(() => {
                 welcome.style.display = 'none';
-                
-                // Show Warning
                 warning.style.display = 'flex';
                 setTimeout(() => {
                     warning.classList.add('active');
+                    playSFX(warningSfx); // warning sound
                     startWarningTypewriter();
                 }, 100);
             }, 1000);
@@ -790,14 +975,15 @@
             const SinhalaMessage = "මේ මගෙ ජීවිත කතාව මේක ඔයා කියවද්දි මන් නැතිවෙන්න පුලුවන්.ඒත් හොදට කියවන්න..";
             let index = 0;
             textElement.textContent = "";
+            startTypingSound();
 
             function typeChar() {
                 if (index < SinhalaMessage.length) {
                     textElement.textContent += SinhalaMessage.charAt(index);
                     index++;
-                    setTimeout(typeChar, 100); // realistic typing speed for Warning
+                    setTimeout(typeChar, 100);
                 } else {
-                    // Once typing finished, wait 2.5 seconds, then fade out warning
+                    stopTypingSound();
                     setTimeout(() => {
                         const warningScreen = document.getElementById('warning-screen');
                         warningScreen.classList.add('fade-blur-out');
@@ -806,31 +992,36 @@
                             warningScreen.style.display = 'none';
                             warningScreen.classList.remove('active');
                             
-                            // Transition to Chapter Selection Menu
                             const menu = document.getElementById('menu-screen');
                             menu.style.display = 'flex';
                             setTimeout(() => {
                                 menu.classList.add('active');
                             }, 100);
-                        }, 1500); // wait for fade blur transition to complete
+                        }, 1500);
                     }, 2500);
                 }
             }
             typeChar();
         }
 
-        // --- CHAPTER SELECTION MENU GENERATION ---
+        // --- GENERATE CHAPTER MENU CARDS ---
         function generateMenuGrid() {
             const grid = document.getElementById('menu-grid');
             grid.innerHTML = '';
 
             for (let i = 1; i <= 10; i++) {
-                const title = chapterTitles[i] || `පරිච්ඡේදය ${i}`;
-                const desc = chapterDescriptions[i] || 'මෙහි පරිච්ඡේද විස්තරය ලියා තබන්න...';
+                const title = chapterTitles[i];
+                const desc = chapterDescriptions[i];
                 
                 const card = document.createElement('div');
                 card.className = 'chapter-card';
-                card.onclick = () => openChapter(i);
+                card.id = `chapter-card-${i}`;
+                card.onclick = () => handleChapterClick(i);
+
+                // Add "locked" state if Ch 2-10 are not unlocked
+                if (i > 1 && !unlockedSecret) {
+                    card.classList.add('locked');
+                }
 
                 card.innerHTML = `
                     <div class="card-number">CHAPTER 0${i}</div>
@@ -841,7 +1032,65 @@
             }
         }
 
-        // --- BOOK ENGINE (PAGINATION, MODES, AND ANIMATION) ---
+        // --- LOCK SYSTEM LOGIC ---
+        function handleChapterClick(chNum) {
+            if (chNum === 1 || unlockedSecret) {
+                openChapter(chNum);
+            } else {
+                // Trigger lock overlay for chapters 2-10
+                targetLockedChapter = chNum;
+                showLockOverlay();
+            }
+        }
+
+        function showLockOverlay() {
+            playSFX(lockSfx);
+            document.getElementById('menu-screen').style.filter = "blur(15px)";
+            const overlay = document.getElementById('lock-overlay');
+            overlay.style.display = 'flex';
+            document.getElementById('lock-pass-input').focus();
+        }
+
+        function closeLockOverlay() {
+            document.getElementById('menu-screen').style.filter = "none";
+            document.getElementById('lock-overlay').style.display = 'none';
+            document.getElementById('lock-pass-input').value = '';
+        }
+
+        function verifyLockCode() {
+            const codeInput = document.getElementById('lock-pass-input').value.trim();
+            if (codeInput === 'sachini') {
+                unlockedSecret = true;
+                closeLockOverlay();
+                generateMenuGrid(); // Refresh grid layout
+                openChapter(targetLockedChapter);
+            } else {
+                // Wrong password entered -> Magic disappearance sequence
+                closeLockOverlay();
+                triggerWrongPasswordMagic();
+            }
+        }
+
+        function triggerWrongPasswordMagic() {
+            playSFX(whooshSfx); // Whosh sound when fading
+            
+            // Hide chapters 2-10 immediately with falling/fading animation
+            for (let i = 2; i <= 10; i++) {
+                const card = document.getElementById(`chapter-card-${i}`);
+                if (card) {
+                    card.classList.add('fade-out-magic');
+                }
+            }
+        }
+
+        // Check if Ch1 is fully read on page completion
+        function checkCh1Progress(page, total) {
+            if (currentChapter === 1 && page === total) {
+                ch1FullyRead = true; // Mark 1st chapter as fully completed
+            }
+        }
+
+        // --- BOOK ENGINE ---
         function openChapter(chNum) {
             currentChapter = chNum;
             currentPage = 1;
@@ -852,15 +1101,11 @@
             menu.classList.remove('active');
             setTimeout(() => {
                 menu.style.display = 'none';
-                
                 book.style.display = 'flex';
                 setTimeout(() => {
                     book.classList.add('active');
-                    
-                    // Show fantasy title border magically
                     const titleBorder = document.getElementById('fantasy-border-frame');
                     titleBorder.classList.add('show');
-                    
                     renderChapterPage();
                 }, 100);
             }, 800);
@@ -868,6 +1113,7 @@
 
         function backToMenu() {
             stopTyping();
+            stopTypingSound();
             const menu = document.getElementById('menu-screen');
             const book = document.getElementById('book-screen');
             const titleBorder = document.getElementById('fantasy-border-frame');
@@ -875,12 +1121,17 @@
             titleBorder.classList.remove('show');
             book.classList.remove('active');
             
+            // If user fully read Ch 1 and went back, restore hidden chapters (and re-lock)
+            if (ch1FullyRead) {
+                unlockedSecret = false; // Reset lock back
+            }
+
             setTimeout(() => {
                 book.style.display = 'none';
-                
                 menu.style.display = 'flex';
                 setTimeout(() => {
                     menu.classList.add('active');
+                    generateMenuGrid(); // Re-render grid to show either restored or locked state
                 }, 100);
             }, 800);
         }
@@ -888,10 +1139,8 @@
         function setMode(mode) {
             if (activeMode === mode) return;
             activeMode = mode;
-            
             document.getElementById('typing-pill').classList.toggle('active', mode === 'typing');
             document.getElementById('read-pill').classList.toggle('active', mode === 'read');
-            
             renderChapterPage();
         }
 
@@ -904,33 +1153,33 @@
 
         function renderChapterPage() {
             stopTyping();
+            stopTypingSound();
             
             const rawParagraphs = chaptersData[currentChapter] || ["මෙහි පරිච්ඡේදය ඇතුළත් කරන්න..."];
             const maxParasPerPage = 4;
             const totalPages = Math.ceil(rawParagraphs.length / maxParasPerPage) || 1;
             
-            // Boundary validation
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
 
-            // Get current page paragraphs
             const startIdx = (currentPage - 1) * maxParasPerPage;
             const endIdx = startIdx + maxParasPerPage;
             const pageParagraphs = rawParagraphs.slice(startIdx, endIdx);
 
-            // Set Title
-            document.getElementById('chapter-title-text').textContent = chapterTitles[currentChapter] || `පරිච්ඡේදය ${currentChapter}`;
-
+            document.getElementById('chapter-title-text').textContent = chapterTitles[currentChapter];
             const container = document.getElementById('story-content-container');
             container.innerHTML = '';
 
+            // Check if Ch 1 is finished
+            checkCh1Progress(currentPage, totalPages);
+
             if (activeMode === 'typing') {
-                // Execute incremental typewriter animation for page paragraphs
+                startTypingSound();
                 runTypewriterMode(container, pageParagraphs, 0, () => {
+                    stopTypingSound();
                     renderPaginationControls(totalPages);
                 });
             } else {
-                // Execute blur/fade-in animation
                 runReadMode(container, pageParagraphs);
                 renderPaginationControls(totalPages);
             }
@@ -953,12 +1202,9 @@
                 if (charIdx < text.length) {
                     p.textContent += text.charAt(charIdx);
                     charIdx++;
-                    
-                    // Typing speed setting (approx 20ms per character)
                     typingTimer = setTimeout(typeCharacter, 20);
                 } else {
                     p.classList.remove('typing-active');
-                    // Recurse to type next paragraph
                     runTypewriterMode(container, paragraphs, pIdx + 1, onComplete);
                 }
             }
@@ -979,7 +1225,6 @@
             const paginationBar = document.getElementById('pagination-bar');
             paginationBar.innerHTML = '';
 
-            // Previous Button
             const prevBtn = document.createElement('button');
             prevBtn.className = 'nav-btn';
             prevBtn.textContent = '← පෙර පිටුව';
@@ -992,13 +1237,11 @@
             };
             paginationBar.appendChild(prevBtn);
 
-            // Page Indicator
             const pageCounter = document.createElement('span');
             pageCounter.className = 'page-counter';
             pageCounter.textContent = `පිටුව ${currentPage} / ${totalPages}`;
             paginationBar.appendChild(pageCounter);
 
-            // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.className = 'nav-btn';
             nextBtn.textContent = 'මීළඟ පිටුව →';

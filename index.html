@@ -668,9 +668,9 @@
 <body>
 
     <!-- AUDIO ELEMENTS -->
-    <!-- Sad Background Instrumental Music -->
+    <!-- Sad Beautiful Slowly Vocal Background Music -->
     <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+        <source src="https://pub-c5e31b5cdafb419a8640026a0dc056d6.r2.dev/sad-vocal-bgm.mp3" type="audio/mpeg">
     </audio>
     <!-- SFX Sounds -->
     <audio id="sound-typing" loop>
@@ -766,7 +766,7 @@
         // --- 10 CHAPTERS DATA WITH EDITABLE SECTIONS ---
         const chaptersData = {
             1: [
-                "මගේ ජීවිතයේ පූර්විකාව ලියන්නට පටන් ගන්නේ කොතැනින්දැයි මට සිතාගත නොහැකිය. සෑම මනුෂ්‍යයෙකුටම තමන්ටම ආවේණික වූ රිද්මයක් මෙන්ම රටාවක් ඇත. කුඩා කල මා විඳි ඒ සුන්දර පරිසරය, නිදහස සහ සුවඳ අදටත් මාගේ සිහින අතර දැවටෙමින් පවතී.",
+                "මගේ ජීවිතයේ පූර්විකාව ලියන්නට පටන් ගන්නේ කොතැනින්දැයි මට සිතාගත නොහැකිය. සෑම මනුෂ්‍යයෙකුටම තමන්ටම ආවේණික වූ රිද්මයක් මෙන්ම රටාවක් ඇත. කුඩා කල මා විඳි ඒ සුන්දර පරිසරය, නිදහස සහ සුවඳ අදටත් මාගේ සිතුවිලි අතර දැවටෙමින් පවතී.",
                 "ගම කෙළවරේ වූ වෙල්යායත්, නාන තොටුපළත්, හවස් යාමයට ගමේ පන්සලෙන් ඇසුණු ඝණ්ඨා නාදයත් මාගේ ළමා මනස ලස්සන සිතුවම් පෙළකින් හැඩගැන්වීය. එදා ගෙවුණු හැම තත්පරයක්ම මට මහා නිධානයක් බඳුය.",
                 "ළමා වියේදී ජීවිතය සරල වූ තරමටම අනාගතය පිළිබඳ තිබුණේ ඉතා අල්ප අවබෝධයකි. සෙල්ලම් මිතුරන් සමඟ ගත කළ කාලය, වැහි දිනවල දිය කඩිතිවල සෙල්ලම් බෝට්ටු පාවි කරමින් විඳි ආශ්වාදය මගේ ජීවිතයේ සුන්දරම දින විය.",
                 "නමුත් කාලයේ වැලි තලාවෙන් සියල්ල වැසී යද්දී මා මේ පරිච්ඡේදය මෙලෙස සනිටුහන් කර තබන්නේ, ය.",
@@ -875,23 +875,67 @@
         const lockSfx = document.getElementById('sound-lock');
         const whooshSfx = document.getElementById('sound-whoosh');
 
+        const NORMAL_MUSIC_VOLUME = 0.25; // Quiet & Emotional Background Level
+        const DUCKED_MUSIC_VOLUME = 0.05; // Faded low volume level when SFX plays
+        let isDucked = false;
+
         function startBgMusic() {
-            bgMusic.volume = 0.4;
+            bgMusic.volume = NORMAL_MUSIC_VOLUME;
             bgMusic.play().catch(e => console.log("Music play blocked. Waiting for click."));
         }
 
+        // Fade background music down gently
+        function duckBackgroundMusic() {
+            if (isDucked) return;
+            isDucked = true;
+            fadeVolume(bgMusic, DUCKED_MUSIC_VOLUME, 300);
+        }
+
+        // Fade background music back up gently
+        function unduckBackgroundMusic() {
+            if (!isDucked) return;
+            isDucked = false;
+            fadeVolume(bgMusic, NORMAL_MUSIC_VOLUME, 400);
+        }
+
+        // Linear Volume Fader Helper
+        function fadeVolume(audioElement, targetVolume, duration) {
+            const startVolume = audioElement.volume;
+            const steps = 20;
+            const stepTime = duration / steps;
+            const volDifference = targetVolume - startVolume;
+            let currentStep = 0;
+
+            const interval = setInterval(() => {
+                currentStep++;
+                audioElement.volume = startVolume + (volDifference * (currentStep / steps));
+                if (currentStep >= steps) {
+                    audioElement.volume = targetVolume;
+                    clearInterval(interval);
+                }
+            }, stepTime);
+        }
+
         function playSFX(audio) {
+            duckBackgroundMusic();
             audio.currentTime = 0;
             audio.play().catch(e => {});
+            
+            // Return music to normal after SFX ends (for non-looping sounds)
+            audio.onended = () => {
+                unduckBackgroundMusic();
+            };
         }
 
         function startTypingSound() {
-            typingSfx.volume = 0.5;
+            duckBackgroundMusic();
+            typingSfx.volume = 0.4;
             typingSfx.play().catch(e => {});
         }
 
         function stopTypingSound() {
             typingSfx.pause();
+            unduckBackgroundMusic();
         }
 
         // --- WELCOME BUBBLES ---
@@ -1055,6 +1099,7 @@
             document.getElementById('menu-screen').style.filter = "none";
             document.getElementById('lock-overlay').style.display = 'none';
             document.getElementById('lock-pass-input').value = '';
+            unduckBackgroundMusic();
         }
 
         function verifyLockCode() {
@@ -1211,6 +1256,11 @@
             typeCharacter();
         }
 
+        // Simple typing sound end handler for button navigations
+        function triggerNavSound() {
+            playSFX(lockSfx); 
+        }
+
         function runReadMode(container, paragraphs) {
             paragraphs.forEach((text, i) => {
                 const p = document.createElement('p');
@@ -1232,6 +1282,7 @@
             prevBtn.onclick = () => {
                 if (currentPage > 1) {
                     currentPage--;
+                    triggerNavSound();
                     renderChapterPage();
                 }
             };
@@ -1249,6 +1300,7 @@
             nextBtn.onclick = () => {
                 if (currentPage < totalPages) {
                     currentPage++;
+                    triggerNavSound();
                     renderChapterPage();
                 }
             };

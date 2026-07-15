@@ -477,31 +477,33 @@
             background: rgba(13, 16, 29, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
-            padding: 40px;
+            padding: 30px; /* Reduced padding slightly to give more room */
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            height: 380px; /* Fixed height to prevent overflow */
+            min-height: 380px; /* Changed from fixed height to min-height to grow dynamically */
+            height: auto; /* Allows card to expand downward gracefully if needed */
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             margin-bottom: 25px;
-            overflow: hidden; /* Restricts vertical content overflow */
+            overflow: visible; /* Allows natural layout flow without cutting elements */
         }
 
         .story-content {
             flex-grow: 1;
-            overflow: hidden;
+            height: auto;
+            overflow: visible;
         }
 
         .story-paragraph {
             color: var(--text-muted);
-            font-size: 0.92rem; /* Made font size slightly smaller */
-            line-height: 1.55; /* Book-friendly compact line height */
-            letter-spacing: 0.2px; /* Nicely balanced text spacing like a printed book */
-            margin-bottom: 16px; /* Elegant paragraph spacing */
+            font-size: 0.88rem; /* Sized down slightly for beautiful density */
+            line-height: 1.45; /* Compact line-height to bring lines closer */
+            letter-spacing: 0.1px; /* Tighter letter-spacing */
+            margin-bottom: 12px; /* Less margin below paragraph to pull text closer */
             text-align: justify;
-            text-indent: 30px;
+            text-indent: 25px; /* Slightly tighter indentation */
             transition: opacity 0.5s ease;
         }
 
@@ -538,6 +540,7 @@
             align-items: center;
             padding: 10px 0 40px 0;
             z-index: 5;
+            margin-top: auto; /* Pushes pagination to bottom relative to flex parent */
         }
 
         .nav-btn {
@@ -825,7 +828,7 @@
             10: [
                 "අවසානය යනු තවත් අලුත් ආරම්භයක ඇරඹුමයි. මාගේ ජීවිත කතාවේ මේ අවසාන පරිච්ඡේදය ලියන්නේ අතීතය දෙස මහත් අභිමානයෙන් හා සතුටෙන් යුතුව බලමිනි.",
                 "ජීවිතයේ බොහෝ දේ අත්කර ගත්තෙමි, බොහෝ දේ අහිමි කර ගත්තෙමි. එහෙත් අවසාන වශයෙන් මා ජීවත් වූ කාලය පිළිබඳ මට කිසිදු පසුතැවීමක් නැත. මා මේ ලෝකයේ මගේ සලකුණ සනිටුහන් කර ඇත.",
-                "මා ලියූ මේ ජීවිත කතාව කියවා අවසන් කරන ඔබට යම් පාඩමක් හෝ අවබෝධයක් ලැබුණේ නම් එය මාගේ විශාලතම ජයග්‍රහණයයි.",
+                "මාගේ ජීවීත කතාව කියවා අවසන් කරන ඔබට යම් පාඩමක් හෝ අවබෝධයක් ලැබුණේ නම් එය මාගේ විශාලතම ජයග්‍රහණයයි.",
                 "මාගේ ජීවන ගමනට සෙවනැල්ලක් වූ සියලු දෙනාටත්, මේ පොත ආදරයෙන් කියවා නිම කළ ඔබටත් මාගේ හෘදයාංගම ස්තූතිය පිරිනමමි. ජීවිතය සුන්දරය, එය විඳින්න!",
                 "මෙය 10 වන පරිච්ඡේදයේ අවසාන පිටුවයි. මෙතැනින් මගේ ජීවිත පොතේ නිමාව සනිටුහන් වේ. සුභ ගමන්!"
             ]

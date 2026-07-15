@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - My Life E-Book</title>
+    <style>
+        :root {
+            --bg-dark: #08090f;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #151a30 0%, #08090f 100%);
+            --card-bg: rgba(22, 26, 46, 0.65);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-pink: #ea4c89;
+            --accent-purple: #8a2be2;
+            --accent-gold: #ffd700;
+            --text-light: #ffffff;
+            --text-muted: #b5bdd4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, "Sinhala Sangam MN", "Noto Sans Sinhala", sans-serif;
+            background: var(--bg-dark);
+            background-image: var(--bg-gradient);
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Screen States */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ---------------------------------
+           1. WELCOME SCREEN (Glassmorphism & Bubbles)
+           --------------------------------- */
+        #welcome-screen {
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .bubble-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.02) 80%);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 4px 10px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            pointer-events: none;
+            animation: floatUp 12s infinite ease-in-out;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) translateX(0) scale(1); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) translateX(50px) scale(1.2); opacity: 0; }
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 460px;
+            text-align: center;
+            z-index: 5;
+            transition: transform 0.5s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ebook-title {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 35px;
+            text-shadow: 0 10px 20px rgba(234, 76, 137, 0.15);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            outline: none;
+            color: #fff;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .login-input:focus {
+            border-color: var(--accent-pink);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 15px rgba(234, 76, 137, 0.3);
+        }
+
+        .login-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.95rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 35px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(234, 76, 137, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(234, 76, 137, 0.6);
+        }
+
+        .error-message {
+            color: #ff3366;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* ---------------------------------
+           2. WARNING SCREEN (Blinking Neon Red & Typewriter)
+           --------------------------------- */
+        #warning-screen {
+            background: #000000;
+            flex-direction: column;
+            z-index: 20;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .warning-title {
+            color: #ff0055;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            animation: neonBlink 1.2s infinite ease-in-out;
+        }
+
+        @keyframes neonBlink {
+            0%, 100% {
+                text-shadow: 0 0 5px #ff0055, 0 0 10px #ff0055, 0 0 25px #ff0055, 0 0 50px #ff0055;
+                opacity: 1;
+            }
+            50% {
+                text-shadow: 0 0 2px #ff0055, 0 0 5px #ff0055, 0 0 10px #ff0055;
+                opacity: 0.4;
+            }
+        }
+
+        .warning-text-container {
+            max-width: 650px;
+            min-height: 120px;
+            line-height: 1.8;
+            font-size: 1.4rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Fade Out & Blur Transition */
+        .fade-blur-out {
+            filter: blur(25px);
+            opacity: 0 !important;
+        }
+
+        /* ---------------------------------
+           3. CHAPTER SELECTION (Premium Dashboard Theme)
+           --------------------------------- */
+        #menu-screen {
+            flex-direction: column;
+            background: var(--bg-dark);
+            background-image: var(--bg-gradient);
+            padding: 40px 20px;
+            overflow-y: auto;
+            justify-content: flex-start;
+        }
+
+        .menu-header {
+            margin: 40px 0 30px 0;
+            text-align: center;
+        }
+
+        .menu-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff, #a0aec0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-header p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .grid-container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .chapter-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 25px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .chapter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(138, 43, 226, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 43, 226, 0.15);
+        }
+
+        .chapter-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-number {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--accent-pink);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------
+           4. BOOK VIEW SCREEN (Paginated Book Theme)
+           --------------------------------- */
+        #book-screen {
+            flex-direction: column;
+            background: var(--bg-dark);
+            background-image: var(--bg-gradient);
+            padding: 20px;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .book-navbar {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 25px;
+            z-index: 5;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Controls Toggle Bar */
+        .controls-bubble {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 30px;
+            display: flex;
+            gap: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-pill {
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-pill.active {
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(234, 76, 137, 0.3);
+        }
+
+        /* Fantasy Styled Header */
+        .fantasy-border-container {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+
+        .fantasy-border {
+            border: 2px solid var(--accent-gold);
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15), inset 0 0 15px rgba(255, 215, 0, 0.08);
+            position: relative;
+            background: rgba(22, 26, 46, 0.8);
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .fantasy-border.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .fantasy-border::before, .fantasy-border::after {
+            content: "✦";
+            position: absolute;
+            color: var(--accent-gold);
+            font-size: 1.2em;
+            text-shadow: 0 0 8px var(--accent-gold);
+        }
+
+        .fantasy-border::before { top: -10px; left: -10px; }
+        .fantasy-border::after { bottom: -10px; right: -10px; }
+
+        .fantasy-border h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+        }
+
+        /* Book Content Page */
+        .book-page {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(13, 16, 29, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .story-content {
+            flex-grow: 1;
+        }
+
+        .story-paragraph {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            margin-bottom: 24px;
+            text-align: justify;
+            text-indent: 40px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Typewriter Blinking Cursor style */
+        .story-paragraph.typing-active::after {
+            content: "▮";
+            color: var(--accent-pink);
+            animation: cursorBlink 0.7s infinite;
+            margin-left: 3px;
+        }
+
+        @keyframes cursorBlink {
+            50% { opacity: 0; }
+        }
+
+        /* Fade/Blur in transition for READ mode */
+        .story-paragraph.blur-fade-in {
+            opacity: 0;
+            filter: blur(10px);
+            animation: blurFadeInKey 0.8s forwards;
+        }
+
+        @keyframes blurFadeInKey {
+            to {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+        /* Dynamic Book Pagination Controls */
+        .book-pagination {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 40px 0;
+            z-index: 5;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .page-counter {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. WELCOME SCREEN -->
+    <section id="welcome-screen" class="screen active">
+        <div class="bubble-container" id="welcome-bubbles"></div>
+        <div class="login-card">
+            <h1 class="ebook-title">Welcome My Life E-Book</h1>
+            <div class="input-group">
+                <input type="text" id="username-input" class="login-input" placeholder="enter your valid name" autocomplete="off">
+                <div class="error-message" id="error-msg"></div>
+            </div>
+            <button id="enter-btn" class="submit-btn">ENTER</button>
+        </div>
+    </section>
+
+    <!-- 2. WARNING SCREEN -->
+    <section id="warning-screen" class="screen">
+        <h1 class="warning-title">Warning</h1>
+        <div class="warning-text-container">
+            <span id="warning-typewriter-text" style="font-weight: 400; font-size: 1.35rem;"></span>
+        </div>
+    </section>
+
+    <!-- 3. CHAPTER SELECTION MENU -->
+    <section id="menu-screen" class="screen">
+        <div class="menu-header">
+            <h1>මගේ ජීවිතයේ පරිච්ඡේද</h1>
+            <p>ජීවන ගමනේ එක් එක් හැරවුම් ලක්ෂයන් හා අමතක නොවන මතකයන්</p>
+        </div>
+        <div class="grid-container" id="menu-grid">
+            <!-- Dynamic Chapter cards generated by JS -->
+        </div>
+    </section>
+
+    <!-- 4. BOOK VIEW SCREEN -->
+    <section id="book-screen" class="screen">
+        <div class="book-navbar">
+            <button class="back-btn" onclick="backToMenu()">
+                ← ආපසු යන්න
+            </button>
+            <div class="controls-bubble">
+                <button class="control-pill active" id="typing-pill" onclick="setMode('typing')">TYPING</button>
+                <button class="control-pill" id="read-pill" onclick="setMode('read')">READ</button>
+            </div>
+        </div>
+
+        <div class="fantasy-border-container">
+            <div class="fantasy-border" id="fantasy-border-frame">
+                <h2 id="chapter-title-text">ආරම්භය</h2>
+            </div>
+        </div>
+
+        <div class="book-page">
+            <div class="story-content" id="story-content-container">
+                <!-- Dynamically typed/fade paragraphs go here -->
+            </div>
+        </div>
+
+        <div class="book-pagination" id="pagination-bar">
+            <!-- Dynamic prev, page num, next controls -->
+        </div>
+    </section>
+
+    <script>
+        // --- 10 CHAPTERS DATA WITH EDITABLE SECTIONS ---
+        // ඔබට අවශ්‍ය ඕනෑම ඡේද ප්‍රමාණයක් (Paragraphs) මෙහි එක් එක් පරිච්ඡේදය යටතේ ලියන්න පුළුවන්.
+        // පිටුවක ඡේද 4ක් ඉක්මවා ගියහොත් එය ස්වයංක්‍රීයවම ඊළඟ පිටුවට (Next Page) එකතු වේ.
+        const chaptersData = {
+            1: [
+                "මගේ ජීවිතයේ පූර්විකාව ලියන්නට පටන් ගන්නේ කොතැනින්දැයි මට සිතාගත නොහැකිය. සෑම මනුෂ්‍යයෙකුටම තමන්ටම ආවේණික වූ රිද්මයක් මෙන්ම රටාවක් ඇත. කුඩා කල මා විඳි ඒ සුන්දර පරිසරය, නිදහස සහ සුවඳ අදටත් මාගේ සිහින අතර දැවටෙමින් පවතී.",
+                "ගම කෙළවරේ වූ වෙල්යායත්, නාන තොටුපළත්, හවස් යාමයට ගමේ පන්සලෙන් ඇසුණු ඝණ්ඨා නාදයත් මාගේ ළමා මනස ලස්සන සිතුවම් පෙළකින් හැඩගැන්වීය. එදා ගෙවුණු හැම තත්පරයක්ම මට මහා නිධානයක් බඳුය.",
+                "ළමා වියේදී ජීවිතය සරල වූ තරමටම අනාගතය පිළිබඳ තිබුණේ ඉතා අල්ප අවබෝධයකි. සෙල්ලම් මිතුරන් සමඟ ගත කළ කාලය, වැහි දිනවල දිය කඩිතිවල සෙල්ලම් බෝට්ටු පාවි කරමින් විඳි ආශ්වාදය මගේ ජීවිතයේ සුන්දරම දින විය.",
+                "නමුත් කාලයේ වැලි තලාවෙන් සියල්ල වැසී යද්දී මා මේ පරිච්ඡේදය මෙලෙස සනිටුහන් කර තබන්නේ, ය.",
+                "මෙය 1 වන පරිච්ඡේදයේ දෙවන පිටුවේ පළමු ඡේදයයි. (ඔබට මෙම පෙළ වෙනස් කර ඔබගේ කතාව මෙහි ඇතුළත් කළ හැක.)",
+                "ජීවිතයේ පළමු පියවර සැමවිටම අභියෝගාත්මක වන අතර, මා පිය නැගූ ඒ අතීත මංපෙත් දෙස ආපසු හැරී බැලීමේදී සිතෙහි ඇතිවන්නේ මහත් කම්පනයකි."
+            ],
+            2: [
+                "මගේ පාසල් විය ආරම්භ වූයේ මාගේ මුළු ජීවිතයේම විශාලතම පෙරළියක් සිදු කරමිනි. පළමු දින පාසල් ගිය හැටි අද මෙන් මතකය. මව්පියන්ගේ දෑත් හැර දමා අමුතුම පරිසරයකට අනුගත වීම ලෙහෙසි පහසු කටයුත්තක් නොවීය.",
+                "එහෙත් ක්‍රමයෙන් හමුවූ ගුරුවරුන්ගේ ආදරයත්, නව මිතුරන්ගේ ඇසුරත් නිසා පාසල මගේ දෙවන නිවස බවට පත්විය. පොත්පත් වලට පමණක් සීමා නොවී, ක්‍රීඩාව සහ බාහිර ක්‍රියාකාරකම් හරහා මගේ පෞරුෂය වර්ධනය වන්නට විය.",
+                "පාසලේ ලියුම් දියුණු කරමින් ලැබූ පන්නරය මා ජීවිතයේ ඉදිරියට යෑමට මහඟු පිටුවහලක් විය. එම සුන්දර මතකයන් මෙහි සනිටුහන් කරමි.",
+                "ළමා මනස ක්‍රමයෙන් තරුණ වියට පරිවර්තනය වෙද්දී හමුවූ අභියෝග, ගැටලු සහ අපේක්ෂාවන් මේ පරිච්ඡේදය පුරාවට දිග හැරේ."
+            ],
+            3: [
+                "තරුණ විය යනු සිහින වල තක්සලාවයි. ජීවිතයේ සැබෑ ලෝකය කුමක්ද කියා වටහා ගැනීමට පටන් ගත්තේ මේ කාලයේදීය. ආදරය, සෙනෙහස මෙන්ම කලකිරීම් ද ජීවිතයට සමීප විය.",
+                "සමහර සිහින බොඳවී යද්දී තවත් සිහින සැබෑ කරගන්නට දිවා රෑ නොබලා වෙහෙසුණෙමු. පටු මාවත් ඔස්සේ බොහෝ දුර ගොස් වැරදුණු තැන් නිවැරදි කර ගැනීමට සිදු විය.",
+                "මෙම 3 වන පරිච්ඡේදය තුළ මාගේ ජීවිතයේ තීරණාත්මක තීරණ කිහිපයක් ගත් ආකාරයත්, ඉන් මා ලැබූ ප්‍රතිඵලත් විස්තර කර ඇත.",
+                "අභියෝග මධ්‍යයේ වුවද නොසැලී ඉදිරියට යාමට මට ශක්තිය දුන් මගේ ආදරණීයයන් මේ මොහොතේ සිහිපත් කරමි."
+            ],
+            4: [
+                "ප්‍රථම ප්‍රේමය යනු ජීවිතයේ කිසිදා අමතක කළ නොහැකි, හදවතේ ගැඹුරුම තැනක සඟවා තබන මිහිරිම වේදනාවයි. ඇස් දෙකක් එකට මුණගැසුණු ඒ පළමු මොහොත තවමත් මගේ මතකයේ සදා නොනැසී පවතී.",
+                "ඒ අපූරු හැඟීම ජීවිතයට නව අරුතක් එක් කළේය. ලෝකය වඩාත් සුන්දර ලෙස පෙනෙන්නට පටන් ගත්තේ ඇය නිසාය. එකට ලියූ ආදර ලිපි, සොරෙන් හුවමාරු කරගත් සිනහවන් මගේ ජීවිතයේ රන්වන් පිටු කිහිපයකි.",
+                "නමුත් ඇතැම් ආදර කතා සුන්දරව නිම වන්නේ නැත. ඉරණම අප දෙදෙනා දෛවයේ සරදමකින් මෙන් දෙපසකට ඇද දැමුවේය. වෙන්වීම දුකක් වුවද, ඇය මට කියා දුන් ජීවිතය මම අදටත් අගය කරමි.",
+                "මෙම පරිච්ඡේදයෙන් මාගේ ජීවිතයේ එම ආදරණීය සහ සංවේදී යුගය ගැන සියල්ල විවෘතව ලියා තබමි."
+            ],
+            5: [
+                "ජීවිතයේ හැරවුම් ලක්ෂය උදාවන්නේ අප කිසිසේත් බලාපොරොත්තු නොවන මොහොතකය. මා මුහුණ දුන් එක්තරා විශාල සිදුවීමක් මගේ මුළු ජීවන දැක්මම වෙනස් කිරීමට සමත් විය.",
+                "එතෙක් මා දුටු සරල ලෝකයෙන් එහා ගිය වගකීම් සහ බරපතලකම මට දැනෙන්නට විය. මාගේ රැකියාව, වෘත්තීය ජීවිතය සහ සමාජය සමඟ ගනුදෙනු කිරීම මේ කාලය තුළ වඩාත් තීව්‍ර විය.",
+                "පරාජයන් මධ්‍යයේ වුවද නැවත නැඟිටීමේ කලාව මම ප්‍රගුණ කළෙමි. ඒ සෑම බාධකයක්ම මට මාව හඳුනා ගැනීමට මඟ පෙන්වූ ගුරුවරුන් බඳු විය.",
+                "ජීවිතයේ සාර්ථකත්වය කරා යන ගමනේදී අප අත්හරින දේවල් සහ ලබාගන්නා දේවල් අතර තුලනයක් පවත්වා ගැනීම කොතරම් අපහසුදැයි මට වැටහුණි."
+            ],
+            6: [
+                "අභියෝග සහ බාධක නොමැති ජීවිතයක් කිසිසේත් රසවත් නොවේ. මගේ ජීවිතයේ දරුණුතම කඩාවැටීම් රැසකට මම මුහුණ දුන්නේ මේ කාලවකවානුවේදීය. සමහර අවස්ථාවලදී සියල්ල අතහැර දැමීමට සිතූ වාර අනන්තය.",
+                "විශ්වාස කළ මිනිසුන් පිටුපා යද්දී, හුදෙකලාව සහ බලාපොරොත්තු සුන්වීම මගේ එකම සහකරු විය. එහෙත් මගේ ආත්ම ශක්තිය සහ මා කෙරෙහි තිබූ දැඩි විශ්වාසය මා තවදුරටත් ඉදිරියට තල්ලු කළේය.",
+                "කළු වලාකුළුවලට පසු ලස්සන හිරු පායන්නා සේ, මගේ අඳුරු කාල පරිච්ඡේදය නිමාවෙමින් නැවත ජීවිතයට ආලෝකය ලැබුණු ආකාරය මෙහි ඇතුළත් වේ.",
+                "අභියෝග හමුවේ නොසැලෙන මිනිසෙකු බිහි කරන්නේ කෙසේද යන්න පිළිබඳ මා ලැබූ ප්‍රායෝගික පාඩම් මාලාවක් මෙහි අඩංගුය."
+            ],
+            7: [
+                "හීන හඹා යාම යනු කටුක මෙන්ම අතිශය සුන්දර අත්දැකීමකි. මා දිගු කලක් තිස්සේ දකිමින් සිටි විශාල හීනයක් සැබෑ කර ගැනීම සඳහා මගේ මුළු ශක්තියම කැප කළෙමි.",
+                "නිදි නොලැබූ රාත්‍රීන්, වෙහෙසකර දහවලවල් ගෙවා දමමින් මම මගේ ඉලක්කය වෙත පියවරෙන් පියවර ළඟා වුණෙමි. බොහෝ දෙනෙක් එය කළ නොහැක්කක් යැයි පැවසුවද, මම නොනවත්වාම උත්සාහ කළෙමි.",
+                "අවසානයේදී මගේ සිහිනය සැබෑවක් බවට පත් වූ ඒ ඓතිහාසික දිනය උදා විය. සතුටු කඳුළු වැගිරූ ඒ සුන්දර මොහොත වචනයෙන් විස්තර කළ නොහැකි තරම්ය.",
+                "සිහිනයක් සැබෑ කරගැනීමට අවශ්‍ය වන්නේ දැඩි කැපවීම සහ අරමුණක් සහිතව ක්‍රියා කිරීම පමණක් බව මම මෙයින් සනාථ කරමි."
+            ],
+            8: [
+                "හුදෙකලාව යනු සාපයක් නොව එය කලාවකි. මගේ ජීවිතයේ එක්තරා කාලයක් මම මිනිසුන්ගෙන් ඈත්ව හුදෙකලාව කාලය ගත කිරීමට තීරණය කළෙමි. එම කාලය මගේ මනස සුවපත් කිරීමට හේතු විය.",
+                "සමාජයේ ඝෝෂාවෙන් බැහැරව, ස්වභාවධර්මයට සමීප වෙමින් මගේ අධ්‍යාත්මික පැත්ත වර්ධනය කර ගැනීමට මට හැකි විය. පොත්පත් කියවීම, ස්වයං ඇගයීම මේ කාලයේ ප්‍රධාන අංග විය.",
+                "හුදෙක් තනිවීම යන්නෙන් අදහස් කරන්නේ පාලුවක් නොවන බවත්, එය තමා සමඟම ආදරයෙන් බැඳීමට ලැබෙන අනභිභවනීය අවස්ථාවක් බවත් මට වැටහුණි.",
+                "මෙම 8 වන පරිච්ඡේදයෙන් මගේ ජීවිතයේ එම නිහඬ, සාමකාමී සහ පූර්ණ තෘප්තිමත් යුගය විස්තර කෙරේ."
+            ],
+            9: [
+                "වයසින් සහ අත්දැකීම්වලින් මුහුකුරා යද්දී ජීවිතය දෙස බලන කෝණය මුළුමනින්ම වෙනස් වේ. කුඩා දේවලට කෝප වීම හෝ කලබල වීම අත්හැර, සෑම දෙයක් දෙසම උපේක්ෂාවෙන් බැලීමට මම ඉගෙන ගත්තෙමි.",
+                "ජීවිතයේ කිසිවක් ස්ථිර නොවන බවත්, සියල්ල වෙනස් වීමට භාජනය වන බවත් මට දැන් මනාව වැටහේ. අතීත වැරදි දෙස බලා පසුතැවීම වෙනුවට ඒවායින් පාඩම් ඉගෙන ගැනීම වැදගත්ය.",
+                "පරිණත බව යනු නිහඬ වීමයි. බොහෝ දේ ඉවසා දරාගෙන සිනහවකින් මුහුණ දීමට හැකිවීමයි. මාගේ එම පරිණත වීමේ ගමන් මඟ මෙහි අඩංගුය.",
+                "මගේ ජීවිතයේ සැබෑ සතුට රැඳී ඇත්තේ භෞතික දේවල නොව සරල නිදහස් මනසක බව මම වටහා ගත් ආකාරය මෙයින් පෙන්වා දෙමි."
+            ],
+            10: [
+                "අවසානය යනු තවත් අලුත් ආරම්භයක ඇරඹුමයි. මාගේ ජීවිත කතාවේ මේ අවසාන පරිච්ඡේදය ලියන්නේ අතීතය දෙස මහත් අභිමානයෙන් හා සතුටෙන් යුතුව බලමිනි.",
+                "ජීවිතයේ බොහෝ දේ අත්කර ගත්තෙමි, බොහෝ දේ අහිමි කර ගත්තෙමි. එහෙත් අවසාන වශයෙන් මා ජීවත් වූ කාලය පිළිබඳ මට කිසිදු පසුතැවීමක් නැත. මා මේ ලෝකයේ මගේ සලකුණ සනිටුහන් කර ඇත.",
+                "මා ලියූ මේ ජීවිත කතාව කියවා අවසන් කරන ඔබට යම් පාඩමක් හෝ අවබෝධයක් ලැබුණේ නම් එය මාගේ විශාලතම ජයග්‍රහණයයි.",
+                "මාගේ ජීවන ගමනට සෙවනැල්ලක් වූ සියලු දෙනාටත්, මේ පොත ආදරයෙන් කියවා නිම කළ ඔබටත් මාගේ හෘදයාංගම ස්තූතිය පිරිනමමි. ජීවිතය සුන්දරය, එය විඳින්න!",
+                "මෙය 10 වන පරිච්ඡේදයේ අවසාන පිටුවයි. මෙතැනින් මගේ ජීවිත පොතේ නිමාව සනිටුහන් වේ. සුභ ගමන්!"
+            ]
+        };
+
+        const chapterTitles = {
+            1: "ආරම්භය",
+            2: "පාසල් විය සහ මතකයන්",
+            3: "තාරුණ්‍යයේ සිහින",
+            4: "පළමු ආදර කතාව",
+            5: "හැරවුම් ලක්ෂය",
+            6: "විශාල අභියෝග",
+            7: "සිහිනය සැබෑ වීම",
+            8: "හුදෙකලාවේ සුන්දරත්වය",
+            9: "පරිණත යුගය",
+            10: "ජීවිතයේ අවසානය"
+        };
+
+        const chapterDescriptions = {
+            1: "මා උපන් ගම, ළමා කාලය සහ ජීවිතයේ මුල්ම මතකයන්...",
+            2: "පාසලේ පළමු දිනය, අමතක නොවන මිතුරන් සහ ගුරු ඇසුර...",
+            3: "සිහින දකිමින් අනාගතය සනිටුහන් කරන්නට ගත් උත්සාහය...",
+            4: "හදවතට දැනුණු පළමු ආදරය සහ එහි මිහිරි මතකයන්...",
+            5: "මුළු ජීවිතයම සම්පූර්ණයෙන්ම වෙනස් කළ ඒ විශේෂ සිදුවීම...",
+            6: "කඩාවැටීම්, බාධක මධ්‍යයේ නොසැලී නැඟී සිටි ආකාරය...",
+            7: "වසර ගණනාවක් තිස්සේ දුටු මහා සිහිනය සැබෑ කරගත් සුන්දර දිනය...",
+            8: "තනිවෙමින් තමා කවුදැයි හඳුනාගත් නිහඬ ආධ්‍යාත්මික ගමන...",
+            9: "අත්දැකීම් තුළින් පරිණත වී ජීවිතය දෙස උපේක්ෂාවෙන් බැලීම...",
+            10: "ජීවන පොතේ අවසාන පිටු කිහිපය සහ ලෝකයට ඉතිරි කළ පණිවිඩය..."
+        };
+
+        // --- GLOBAL RUNTIME VARIABLES ---
+        let currentChapter = 1;
+        let currentPage = 1;
+        let activeMode = 'typing'; // Default is 'typing' mode
+        let typingTimer = null; // Typing animation reference
+
+        // --- WELCOME PAGE BUBBLES ---
+        function createWelcomeBubbles() {
+            const container = document.getElementById('welcome-bubbles');
+            container.innerHTML = '';
+            const bubbleCount = 20;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                const size = Math.random() * 80 + 30; // 30px to 110px
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.bottom = `-120px`;
+                
+                // Randomize animations
+                const delay = Math.random() * 8;
+                const duration = Math.random() * 10 + 8; // 8s to 18s
+                bubble.style.animationDelay = `${delay}s`;
+                bubble.style.animationDuration = `${duration}s`;
+                
+                container.appendChild(bubble);
+            }
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            createWelcomeBubbles();
+            generateMenuGrid();
+
+            // Keyboard navigation / Enter handler
+            document.getElementById('username-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    validateAndEnter();
+                }
+            });
+
+            document.getElementById('enter-btn').addEventListener('click', validateAndEnter);
+        };
+
+        // --- VALIDATION AND TRANSITIONS ---
+        function validateAndEnter() {
+            const inputVal = document.getElementById('username-input').value.trim();
+            const errorMsg = document.getElementById('error-msg');
+
+            if (inputVal === 'dkxx') {
+                errorMsg.style.opacity = '0';
+                transitionToWarning();
+            } else {
+                errorMsg.textContent = 'Invalid name! Please try again.';
+                errorMsg.style.opacity = '1';
+                // Small shake animation on the card
+                const card = document.querySelector('.login-card');
+                card.style.transform = 'translateX(-10px)';
+                setTimeout(() => card.style.transform = 'translateX(10px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(-10px)', 200);
+                setTimeout(() => card.style.transform = 'translateX(0)', 300);
+            }
+        }
+
+        function transitionToWarning() {
+            const welcome = document.getElementById('welcome-screen');
+            const warning = document.getElementById('warning-screen');
+
+            // Hide Welcome
+            welcome.classList.remove('active');
+            setTimeout(() => {
+                welcome.style.display = 'none';
+                
+                // Show Warning
+                warning.style.display = 'flex';
+                setTimeout(() => {
+                    warning.classList.add('active');
+                    startWarningTypewriter();
+                }, 100);
+            }, 1000);
+        }
+
+        function startWarningTypewriter() {
+            const textElement = document.getElementById('warning-typewriter-text');
+            const SinhalaMessage = "මේ මගෙ ජීවිත කතාව මේක ඔයා කියවද්දි මන් නැතිවෙන්න පුලුවන්.ඒත් හොදට කියවන්න..";
+            let index = 0;
+            textElement.textContent = "";
+
+            function typeChar() {
+                if (index < SinhalaMessage.length) {
+                    textElement.textContent += SinhalaMessage.charAt(index);
+                    index++;
+                    setTimeout(typeChar, 100); // realistic typing speed for Warning
+                } else {
+                    // Once typing finished, wait 2.5 seconds, then fade out warning
+                    setTimeout(() => {
+                        const warningScreen = document.getElementById('warning-screen');
+                        warningScreen.classList.add('fade-blur-out');
+                        
+                        setTimeout(() => {
+                            warningScreen.style.display = 'none';
+                            warningScreen.classList.remove('active');
+                            
+                            // Transition to Chapter Selection Menu
+                            const menu = document.getElementById('menu-screen');
+                            menu.style.display = 'flex';
+                            setTimeout(() => {
+                                menu.classList.add('active');
+                            }, 100);
+                        }, 1500); // wait for fade blur transition to complete
+                    }, 2500);
+                }
+            }
+            typeChar();
+        }
+
+        // --- CHAPTER SELECTION MENU GENERATION ---
+        function generateMenuGrid() {
+            const grid = document.getElementById('menu-grid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const title = chapterTitles[i] || `පරිච්ඡේදය ${i}`;
+                const desc = chapterDescriptions[i] || 'මෙහි පරිච්ඡේද විස්තරය ලියා තබන්න...';
+                
+                const card = document.createElement('div');
+                card.className = 'chapter-card';
+                card.onclick = () => openChapter(i);
+
+                card.innerHTML = `
+                    <div class="card-number">CHAPTER 0${i}</div>
+                    <div class="card-title">${title}</div>
+                    <div class="card-desc">${desc}</div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // --- BOOK ENGINE (PAGINATION, MODES, AND ANIMATION) ---
+        function openChapter(chNum) {
+            currentChapter = chNum;
+            currentPage = 1;
+            
+            const menu = document.getElementById('menu-screen');
+            const book = document.getElementById('book-screen');
+
+            menu.classList.remove('active');
+            setTimeout(() => {
+                menu.style.display = 'none';
+                
+                book.style.display = 'flex';
+                setTimeout(() => {
+                    book.classList.add('active');
+                    
+                    // Show fantasy title border magically
+                    const titleBorder = document.getElementById('fantasy-border-frame');
+                    titleBorder.classList.add('show');
+                    
+                    renderChapterPage();
+                }, 100);
+            }, 800);
+        }
+
+        function backToMenu() {
+            stopTyping();
+            const menu = document.getElementById('menu-screen');
+            const book = document.getElementById('book-screen');
+            const titleBorder = document.getElementById('fantasy-border-frame');
+
+            titleBorder.classList.remove('show');
+            book.classList.remove('active');
+            
+            setTimeout(() => {
+                book.style.display = 'none';
+                
+                menu.style.display = 'flex';
+                setTimeout(() => {
+                    menu.classList.add('active');
+                }, 100);
+            }, 800);
+        }
+
+        function setMode(mode) {
+            if (activeMode === mode) return;
+            activeMode = mode;
+            
+            document.getElementById('typing-pill').classList.toggle('active', mode === 'typing');
+            document.getElementById('read-pill').classList.toggle('active', mode === 'read');
+            
+            renderChapterPage();
+        }
+
+        function stopTyping() {
+            if (typingTimer) {
+                clearTimeout(typingTimer);
+                typingTimer = null;
+            }
+        }
+
+        function renderChapterPage() {
+            stopTyping();
+            
+            const rawParagraphs = chaptersData[currentChapter] || ["මෙහි පරිච්ඡේදය ඇතුළත් කරන්න..."];
+            const maxParasPerPage = 4;
+            const totalPages = Math.ceil(rawParagraphs.length / maxParasPerPage) || 1;
+            
+            // Boundary validation
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            // Get current page paragraphs
+            const startIdx = (currentPage - 1) * maxParasPerPage;
+            const endIdx = startIdx + maxParasPerPage;
+            const pageParagraphs = rawParagraphs.slice(startIdx, endIdx);
+
+            // Set Title
+            document.getElementById('chapter-title-text').textContent = chapterTitles[currentChapter] || `පරිච්ඡේදය ${currentChapter}`;
+
+            const container = document.getElementById('story-content-container');
+            container.innerHTML = '';
+
+            if (activeMode === 'typing') {
+                // Execute incremental typewriter animation for page paragraphs
+                runTypewriterMode(container, pageParagraphs, 0, () => {
+                    renderPaginationControls(totalPages);
+                });
+            } else {
+                // Execute blur/fade-in animation
+                runReadMode(container, pageParagraphs);
+                renderPaginationControls(totalPages);
+            }
+        }
+
+        function runTypewriterMode(container, paragraphs, pIdx, onComplete) {
+            if (pIdx >= paragraphs.length) {
+                if (onComplete) onComplete();
+                return;
+            }
+
+            const p = document.createElement('p');
+            p.className = 'story-paragraph typing-active';
+            container.appendChild(p);
+
+            const text = paragraphs[pIdx];
+            let charIdx = 0;
+
+            function typeCharacter() {
+                if (charIdx < text.length) {
+                    p.textContent += text.charAt(charIdx);
+                    charIdx++;
+                    
+                    // Typing speed setting (approx 20ms per character)
+                    typingTimer = setTimeout(typeCharacter, 20);
+                } else {
+                    p.classList.remove('typing-active');
+                    // Recurse to type next paragraph
+                    runTypewriterMode(container, paragraphs, pIdx + 1, onComplete);
+                }
+            }
+            typeCharacter();
+        }
+
+        function runReadMode(container, paragraphs) {
+            paragraphs.forEach((text, i) => {
+                const p = document.createElement('p');
+                p.className = 'story-paragraph blur-fade-in';
+                p.textContent = text;
+                p.style.animationDelay = `${i * 0.25}s`;
+                container.appendChild(p);
+            });
+        }
+
+        function renderPaginationControls(totalPages) {
+            const paginationBar = document.getElementById('pagination-bar');
+            paginationBar.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'nav-btn';
+            prevBtn.textContent = '← පෙර පිටුව';
+            prevBtn.disabled = (currentPage === 1);
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderChapterPage();
+                }
+            };
+            paginationBar.appendChild(prevBtn);
+
+            // Page Indicator
+            const pageCounter = document.createElement('span');
+            pageCounter.className = 'page-counter';
+            pageCounter.textContent = `පිටුව ${currentPage} / ${totalPages}`;
+            paginationBar.appendChild(pageCounter);
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'nav-btn';
+            nextBtn.textContent = 'මීළඟ පිටුව →';
+            nextBtn.disabled = (currentPage === totalPages);
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderChapterPage();
+                }
+            };
+            paginationBar.appendChild(nextBtn);
+        }
+    </script>
+</body>
+</html>
